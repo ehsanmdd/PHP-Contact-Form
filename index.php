@@ -24,6 +24,11 @@ require_once("./contact-us.php")
         <textarea name="message" id="shorten-input" placeholder="پیام شما"></textarea>
         <br>
         <button type="submit" name="submit" class="btn btn-primary" id="shorten-button">ثبت</button>
+        <?php
+        if (isset($_POST["submit"])) {
+            echo '<p class="alert alert-'.$validationMsg["class"].'">'.$validationMsg["message"].'</p>';
+        }
+        ?>
     </form>
     
 </body>
