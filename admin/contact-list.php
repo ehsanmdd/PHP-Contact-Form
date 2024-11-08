@@ -2,33 +2,35 @@
 require_once("../config/loader.php");
 
 
-$show_iist = true;
-$message = "''";
-
-$query = "SELECT * FROM `data`";
-$result = $conn->query($query);
-$result->execute();
-
-$data = $result->fetchAll(PDO::FETCH_OBJ);
+$show_list = true;
+$message = "";
 
 
-if (isset($_GET["messageid"])) {
-    $query = "SELECT * FROM `data` WHERE id = ?";
-    $result = $conn->prepare($query);
-    $result->bindValue(1, $_GET["messageid"]);
+try {
+    $query = "SELECT * FROM `data`";
+    $result = $conn->query($query);
     $result->execute();
-    
-    $data = $result->fetch(PDO::FETCH_OBJ);
-    $message = $data->contact_message;
-    $show_iist = false;
+
+    if ($result) {
+        $data = $result->fetchAll(PDO::FETCH_OBJ);
+    }
+
+
+    if (isset($_GET["messageid"])) {
+        $query = "SELECT * FROM `data` WHERE id = ?";
+        $result = $conn->prepare($query);
+        $result->bindValue(1, $_GET["messageid"]);
+        $result->execute();
+
+        $data = $result->fetch(PDO::FETCH_OBJ);
+        $message = $data->contact_message;
+        $show_list = false;
+    }
+} catch (PDOException $e) {
+    echo "Executaion Failed" . $e->getMessage();
 }
 
-
 ?>
-
-
-
-
 
 <html lang="en">
 
@@ -44,6 +46,16 @@ if (isset($_GET["messageid"])) {
 
 
     <div class="container table-responsive py-5">
+
+        <?php if (!$show_list) { ?>
+            <div class="message-body">
+                <p><?= $message ?></p>
+                <hr>
+                <a href="/contact-us/admin/contact-list.php" class="btn btn-danger">بازگشت</a>
+            </div>
+
+        <?php } else { ?>
+
             <h1 class="text-center pt-4">لیست اشخاص</h1>
             <table class="table table-bordered table-hover" dir="rtl">
                 <thead class="thead-dark">
@@ -58,7 +70,7 @@ if (isset($_GET["messageid"])) {
                 <tbody>
                     <?php foreach ($data as $key => $item): ?>
                         <tr>
-                            <th scope="row"><?= ++$key ?></th>
+                            <td scope="row"><?= ++$key ?></td>
                             <td><?= $item->contact_name ?></td>
                             <td><?= $item->contact_email ?></td>
                             <td><?= $item->contact_phone ?></td>
@@ -72,6 +84,8 @@ if (isset($_GET["messageid"])) {
                     <?php endforeach; ?>
                 </tbody>
             </table>
+
+        <?php } ?>
     </div>
 </body>
 

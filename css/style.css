@@ -50,3 +50,13 @@ body {
     max-width: 600px;
     margin: auto;
 }
+
+li{
+    list-style: none;
+    list-style-type: none;
+    margin-bottom: 1rem;
+}
+
+li:last-child {
+    margin-bottom: 0;
+}

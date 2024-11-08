@@ -18,15 +18,21 @@ require_once("./contact-us.php")
     <h2>تماس با ما</h2>
 
     <form id="shorten-form" method="POST">
-        <input type="text" name="name" id="shorten-input" placeholder="نام خود را وارد کنید" >
-        <input type="email" name="email" id="shorten-input-link" placeholder="ایمیل خود را وارد کنید" >
-        <input type="text" name="tell" id="shorten-input-link" maxlength="11" placeholder="موبایل خود را وارد کنید" >
-        <textarea name="message" id="shorten-input" placeholder="پیام شما"></textarea>
+        <input type="text" value="<?= $old_name ?>" name="name" id="shorten-input" placeholder="نام خود را وارد کنید" >
+        <input type="email" value="<?= $old_email ?>" name="email" id="shorten-input-link" placeholder="ایمیل خود را وارد کنید" >
+        <input type="text" value="<?= $old_mobile ?>" name="tell" id="shorten-input-link" maxlength="11" placeholder="موبایل خود را وارد کنید" >
+        <textarea type="text" name="message" id="shorten-input" placeholder="پیام شما"><?= $old_message ?></textarea>
         <br>
         <button type="submit" name="submit" class="btn btn-primary" id="shorten-button">ثبت</button>
         <?php
         if (isset($_POST["submit"])) {
-            echo '<p class="alert alert-'.$validationMsg["class"].'">'.$validationMsg["message"].'</p>';
+            if ($validationError == false) {
+                echo '<p class="alert alert-'.$validationMsgSuccess["class"].'">'.$validationMsgSuccess["message"].'</p>';
+            } else {
+                if(count($validationMsg) >= 1) echo '<ul class="msg-items alert alert-'.$validationMsg[0]["class"].'">'; 
+                foreach ($validationMsg as $item) echo '<li class="msg-items">'.$item["message"].'</li>';
+                if(count($validationMsg) >= 1) echo '</ul>';
+            }
         }
         ?>
     </form>

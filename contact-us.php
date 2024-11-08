@@ -3,6 +3,21 @@
 require_once("./config/loader.php");
 
 
+function mobile_validation($mobile)
+{
+    return preg_match('/^[0-9]{11}+$/', $mobile);
+}
+
+function email_validation($email)
+{
+    return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+}
+
+$old_name = "";
+$old_email = "";
+$old_mobile = "";
+$old_message = "";
+
 if (isset($_POST['submit'])) {
 
     $name = $_POST['name'];
@@ -10,16 +25,41 @@ if (isset($_POST['submit'])) {
     $mobile = $_POST['tell'];
     $message = $_POST['message'];
 
-    $validationMsg = ["message" => "", "class" => ""];
+    $validationMsg = [];
+    $validationMsgSuccess = ["message" => "", "class" => ""];
     $validationError = false;
 
+    // Name input validation
     if ($name == "") {
-        $validationMsg ["message"] = "خطا! مقدار نام خالی است";
-        $validationMsg ["class"] = "danger";
+        array_push($validationMsg, ["message" => "خطا! مقدار نام خالی می باشد", "class" => "danger"]);
         $validationError = true;
     } else if (strlen($name) <= 3) {
-        $validationMsg ["message"] = "خطا! مقدار نام باید بیشتر از 3 کارکتر باشد";
-        $validationMsg ["class"] = "danger";
+        array_push($validationMsg, ["message" => "خطا! مقدار نام باید بیشتر از 3 کارکتر باشد", "class" => "danger"]);
+        $validationError = true;
+    }
+
+    // Mobile input validation
+    if ($mobile == "") {
+        array_push($validationMsg, ["message" => "خطا! مقدار موبایل خالی می باشد", "class" => "danger"]);
+        $validationError = true;
+    } else if (!mobile_validation($mobile)) {
+        array_push($validationMsg, ["message" => "خطا! مقدار موبایل باید 11 رقم باشد است", "class" => "danger"]);
+        $validationError = true;
+    }
+
+
+    // Email input validation
+    if ($email == "") {
+        array_push($validationMsg, ["message" => "مقدار ایمیل خالی می باشد"]);
+        $validationError = true;
+    } else if (!email_validation($email)) {
+        array_push($validationMsg, ["message" => "ایمیل وارد شده نا معتبر میباشد"]);
+    }
+
+
+    // Message input validation
+    if ($message == "") {
+        array_push($validationMsg, ["message" => "باکس پیغام خالی می باشد"]);
         $validationError = true;
     }
 
@@ -41,11 +81,16 @@ if (isset($_POST['submit'])) {
         $result->execute();
 
         if ($result) {
-            $validationMsg["message"] = "فرم شما ثبت شد";
-            $validationMsg["class"] = "success";
-        }else {
+            $validationMsgSuccess["message"] = "فرم شما ثبت شد";
+            $validationMsgSuccess["class"] = "success";
+        } else {
             $validationMsg["message"] = "خطا! فرم شما ارسال نشد مجدداارسال بفرمایید";
             $validationMsg["class"] = "danger";
         }
+    } else {
+        $old_name = $name;
+        $old_email = $email;
+        $old_mobile = $mobile;
+        $old_message = $message;
     }
 }
